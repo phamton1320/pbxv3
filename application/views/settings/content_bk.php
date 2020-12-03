@@ -85,6 +85,7 @@
                             $(document).ready(function () {
                                 var crudServiceBaseUrl = "<?php echo base_url().'SettingsController'; ?>",
                                     dataSource = new kendo.data.DataSource({
+                                        
                                         transport: {
                                             read:  {
                                                 url: crudServiceBaseUrl + "/list_settings",
@@ -154,7 +155,7 @@
                                     
                                     //toolbar: ["search"],
                                     pageable: {
-                                        //refresh: true,
+                                        refresh: true,
                                         pageSizes:true,
                                         //buttonCount: 10
                                     },

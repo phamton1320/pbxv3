@@ -143,9 +143,10 @@ class QueuesController extends PBX_Controller
                     // echo $id_update."<br/>";
                     // echo $data_old['member']."-- Ten Cu<br/>";
                     // echo $data['member'];
-                    $this->db->where(['id'=>$id_update])->update('agent',$data);    
+                    $up_row = $this->db->where(['id'=>$id_update])->update('agent',$data);
+                    echo json_encode(array('status'=>$up_row));
+                    //redirect(base_url().'QueuesController/agent/'.$queues_id);   
                 }
-                redirect(base_url().'QueuesController/agent/'.$queues_id);
             }
         }
     }
@@ -172,9 +173,10 @@ class QueuesController extends PBX_Controller
                         'member'    => $item['member'],
                         'name'      => $item['name'],
                     );
-                    $this->db->where(['id'=>$id_update])->update('agent',$data);    
+                    $down_row = $this->db->where(['id'=>$id_update])->update('agent',$data);
+                    echo json_encode(array('status'=>$down_row));
                 }
-                redirect(base_url().'QueuesController/agent/'.$queues_id);
+                //redirect(base_url().'QueuesController/agent/'.$queues_id);
             }
         }
     }

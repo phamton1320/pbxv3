@@ -11,29 +11,29 @@
                     <div class="col-12">
                          <div class="card">
                             <div class="card-header">
-                                <h4 class="card-title">TÌM KIẾM AGENT</h4>
+                                <h4 class="card-title">AGENT</h4>
                             </div>
                             <div class="card-content">
                                 <div class="card-body">
-                                    <p class="mt-1">Nhập <code>Menber</code> và <code>Queues</code> Nhấp tìm kiếm.</p>
+                                    <!-- <p class="mt-1">Nhập <code>Menber</code> và <code>Queues</code> Nhấp tìm kiếm.</p> -->
                                     <?php //echo form_open('SettingsController') ?>
                                         <div class="row">
                                             <div class="col-sm-6">
                                                 <div class="form-group">
                                                     <div class="controls">
-                                                        <input type="text" id='name' class="form-control" placeholder="Name" required="" data-validation-required-message="Vui lòng nhập tên Extention" aria-invalid="false">
+                                                        <input type="hidden" id='name' class="form-control" placeholder="Name" required="" data-validation-required-message="Vui lòng nhập tên Extention" aria-invalid="false">
                                                     <div class="help-block"></div></div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
                                                 <div class="form-group">
                                                     <div class="controls">
-                                                        <input type="text" id='context' class="form-control" placeholder="Context" required="" data-validation-required-message="Vui lòng nhập tên người gọi" aria-invalid="false">
+                                                        <input type="hidden" id='context' class="form-control" placeholder="Context" required="" data-validation-required-message="Vui lòng nhập tên người gọi" aria-invalid="false">
                                                     <div class="help-block"></div></div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <input type="button" id="searchButton" onclick="searchButton()"  class="btn btn-primary waves-effect waves-light" value="Tìm Kiếm">
+                                       
                                     <!-- </form> -->
                                     <div id="example">
                                         <hr>
@@ -119,11 +119,37 @@
                                                     height: 550,
                                                     toolbar: ["create"],
                                                     sortable: true,
+                                                    //disale first Up && Last Down
+                                                    dataBound:function(e){
+                                                    var grid = $('#grid').data('kendoGrid');
+                                                        grid.tbody.find('>tr').each(function () {
+                                                            var getFirstID= grid.dataItem("tbody tr:eq(0)");
+                                                            var getid     = grid.dataItem(this);
+                                                            var id        = getid.id; 
+                                                            var idLastkey = grid._data['length']-1;
+                                                            var getLastID = grid.dataItem("tbody tr:eq("+idLastkey+")");
+                                                            $(this).find('>td>a').each(function(){
+                                                                //console.log(id);
+                                                            if(id==getFirstID.id && this.innerText =="UP")
+                                                            {
+                                                                $(this).addClass('classup'); 
+                                                                $(".classup").attr("disabled", true);
+                                                            }
+                                                            if(id==getLastID.id && this.innerText =="DOWN")
+                                                            {
+                                                                $(this).addClass('classup'); 
+                                                                $(".classup").attr("disabled", true);
+                                                            }
+                                                            });   
+                                                        });
+                                                    },
+                                                    //end disale first Up && Last Down
                                                     columns: [
                                                         { field:    "id",              title:  "STT",width: "40px" },
                                                         { field:    "member",        title:  "Member",width: "220px" },
                                                         { field:    "name",          title:  "Name Queues", width: "220px" },//{ field:    "ghiamcuocgoi",     title:  "Ghi âm cuộc gọi",template: kendo.template($("#name-template").html())},
-                                                        { command: [{text: " UP", iconClass: "k-icon k-i-arrow-60-up", click:up_row},{text: " DOWN", click:down_row, iconClass: "k-icon k-i-arrow-60-down"}], title: "Action", width: "200px" },
+                                                        
+                                                        { command: [{text: " UP",className:"k-grid-UP", iconClass: "k-icon k-i-arrow-60-up", click:up_row},{text: " DOWN", click:down_row, iconClass: "k-icon k-i-arrow-60-down",}], title: "Action", width: "200px" },
                                                     ],
                                                     editable: "popup"
                                                 });
@@ -136,16 +162,34 @@
                                                 var tr      = $(this).closest('tr');
                                                 var rowItem = this.dataItem($(e.currentTarget).closest("tr"));
                                                 var id      = rowItem.id;
-                                                window.location.href = crudServiceBaseUrl+'/agentUp/'+id;
+                                                // window.location.href = crudServiceBaseUrl+'/agentUp/'+id;
+                                                $.ajax({
+                                                    url : "<?php echo base_url().'QueuesController/agentUp/'; ?>"+id,
+                                                    type : "POST",
+                                                    dataType: 'json',
+                                                    
+                                                    success : function (result){//$('#grid').data("kendoGrid").dataSource = new kendo.data.DataSource({ data: result });
+                                                        $('#grid').data("kendoGrid").dataSource.read();
+                                                    }
+                                                });
                                             }
 
                                             function down_row(e) {
                                                 var tr      = $(this).closest('tr');
                                                 var rowItem = this.dataItem($(e.currentTarget).closest("tr"));
                                                 var id      = rowItem.id;
-                                                window.location.href = crudServiceBaseUrl+'/agentDown/'+id;
+                                                //window.location.href = crudServiceBaseUrl+'/agentDown/'+id;
+                                                $.ajax({
+                                                    url : "<?php echo base_url().'QueuesController/agentDown/'; ?>"+id,
+                                                    type : "POST",
+                                                    dataType: 'json',
+                                                    
+                                                    success : function (result){//$('#grid').data("kendoGrid").dataSource = new kendo.data.DataSource({ data: result });
+                                                        $('#grid').data("kendoGrid").dataSource.read();
+                                                    }
+                                                });
                                             }
-
+                                            
                                             function searchButton() {
                                                 dataSearch.read();
                                                 $("#grid").data("kendoGrid").setDataSource(searchDataSource);
